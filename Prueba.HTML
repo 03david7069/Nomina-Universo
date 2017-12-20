@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title id="Title">Trabajador_Name</title>
+</head>
+<body>
+	<h1 align="center" id="Trabajador_Name">Trabajador_Name</h1>
+	<br>
+	<table border="3" align="center">
+		<tr>
+			<td align="center">Nombre del trabajador:</td>
+			<td align="center" id="_Trabajador_Name">Trabajador_Name</td>
+		</tr>
+		<tr>
+			<td align="center">Edad:</td>
+			<td align="center" id="Edad"></td>
+		</tr>
+		<tr>
+			<td align="center">Valor Hora:</td>
+			<td align="center" id="Val_Hora">$</td>
+		</tr>
+		<tr>
+			<td align="center">Horas Trabajadas:</td>
+			<td align="center" id="Horas_Trabajadas"></td>
+		</tr>
+		<tr>
+			<td align="center">Pago Actual</td>
+			<td align="center" id="Pago_Actual">$</td>
+		</tr>
+	</table>
+	<!-- <form action="" onsubmit="return Cerrar_Secion()" id="Cerrar"><input type="submit" value="Cerrar Sección"></form> -->
+	<br>
+	<table id="Tabla" border="3" align="center" ></table>
+	<!-- <br>
+	<table id="Observaciones" border="3" align="center">
+		<tr><td align="center" colspan="2">Observaciones</td></tr>
+		<tr>
+			<td><input type="text" id="Obs" placeholder="Ingresa alguna observación"></td>
+			<td><button id="add_Obs" onclick="Prueba.add_Obs()">Añadir observación</button></td>
+		</tr>
+	</table> -->
+	<br>
+	<table align="center"><tr>
+		<td><button id="Iniciar_Acabar_Trabajo" onclick="Inicio_Fin()">Estado del trabajo</button></td>
+		<td><button id="Actualizar" onclick="Actualizar()">Actualizar</button></td>
+		<td><button id="Guardar" onclick="Prueba.Guardar()">Guardar</button></td>
+		<td><button id="Cargar" onclick="Prueba.Cargar()">Cargar</button></td>
+		<td><form action="" method="POST" onsubmit="return Cerrar_Sesion()" id="Cerrar"><input type="submit" value="Cerrar Sesión"></form></td>
+		<td><button id="Reset" onclick="Reiniciar()">Reiniciar periodo</button></td>
+	</tr></table>
+	<script type="text/javascript">
+		function Trabajador(Name,Age,Val_Hora,Clave){
+			this.Name = Name;
+			this.Age = Age;
+			this.Val_Hora = Val_Hora;
+			this.Clave = Clave;
+			this.Hora_Inicio = [];
+			this.Hora_Fin = [];
+			this.Hora_Trab = [];
+			this.count = 0;
+			this.Trabajando = false;
+			this.Horas_Trabajadas = 0;
+			this.Pago = 0;
+			this.Guardado = false;
+/*			this.Observaciones = [];*/
+			this.Editar_Nombre = function(Name){
+				this.Name = Name;
+				this.Guardado = false;
+			}
+			this.Editar_Edad = function(Age){
+				this.Age = Age;
+				this.Guardado = false;
+			}
+			this.Editar_Valor_Hora = function(Val_Hora){
+				this.Val_Hora = Val_Hora;
+				this.Guardado = false;
+			}
+			this.Editar_Clave = function(Clave){
+				this.Clave = Clave;
+				this.Guardado = false;
+			}
+			this.Inicio = function(){
+				var date = new Date();
+				var Año = date.getFullYear();
+				var Mes = date.getMonth();
+				var Dia = date.getDate();
+				var Hora = date.getHours();
+				var Minuto = date.getMinutes();
+				var Fecha = new Date(Año,Mes,Dia,Hora,Minuto,0,0);
+				this.Hora_Inicio[this.count] = Fecha;
+				this.Trabajando = true;
+				this.Guardado = false;
+				alert(this.Name + " Inicio a trabajar.");
+			}
+			this.Fin = function() {
+				var date = new Date();
+				var Año = date.getFullYear();
+				var Mes = date.getMonth();
+				var Dia = date.getDate();
+				var Hora = date.getHours();
+				var Minuto = date.getMinutes();
+				var Fecha = new Date(Año,Mes,Dia,Hora,Minuto,0,0);
+				this.Hora_Fin[this.count] = Fecha;
+				this.Trabajando = false;
+				var _Hora_Inicio = this.Hora_Inicio[this.count];
+				var _Hora_Final = this.Hora_Fin[this.count];
+				this.Hora_Trab[this.count] = _Hora_Final - _Hora_Inicio;
+				this.count = this.count + 1;
+				this.Guardado = false;
+				alert(this.Name + " Dejo de trabajar.");
+			}
+			this.Conteo = function() {
+				this.Horas_Trabajadas = 0;
+				this.Pago = 0;
+				for (var x = 0; x <= this.Hora_Trab.length-1; x++) {
+					this.Horas_Trabajadas = this.Horas_Trabajadas + this.Hora_Trab[x] / 3600000;
+				}
+				this.Pago = this.Horas_Trabajadas * this.Val_Hora;
+				this.Pago = Math.round(this.Pago);
+				this.Guardado = false;
+			}
+			this.Fin_Ciclo = function(){
+				this.Hora_Inicio = [];
+				this.Hora_Fin = [];
+				this.Hora_Trab = [];
+				this.count = 0;
+				this.Trabajando = false;
+				this.Horas_Trabajadas = 0;
+				this.Pago = 0;
+				this.Guardado = false;
+				localStorage,setItem(this.Name + "_First_Save",false);
+				alert("El ciclo de " + this.Name + " fue reiniciado.");
+			}
+			this.Guardar = function(){
+				localStorage.setItem(this.Name + "_Name",this.Name);
+				localStorage.setItem(this.Name + "_Age",this.Age);
+				localStorage.setItem(this.Name + "_Val_Hora",this.Val_Hora);
+				localStorage.setItem(this.Name + "_Clave",this.Clave);
+				localStorage.setItem(this.Name + "_Hora_Inicio",this.Hora_Inicio.join("|"));
+				localStorage.setItem(this.Name + "_Hora_Fin",this.Hora_Fin.join("|"));
+				// localStorage.setItem(this.Name + "_Observaciones",this.Observaciones.join("|"));
+				localStorage.setItem(this.Name + "_Hora_Trab",this.Hora_Trab);
+				localStorage.setItem(this.Name + "_count",this.count);
+				localStorage.setItem(this.Name + "_Trabajando",this.Trabajando);
+				localStorage.setItem(this.Name + "_First_Save",true);
+				this.Guardado = true;
+				alert("Guardado");
+			}
+			this.Cargar = function(){
+				if (localStorage.getItem(this.Name + "_First_Save")) {
+					this.Name = localStorage.getItem(this.Name + "_Name");
+					this.Age = localStorage.getItem(this.Name + "_Age");
+					this.Val_Hora = localStorage.getItem(this.Name + "_Val_Hora");
+					this.Clave = localStorage.getItem(this.Name + "_Clave");
+					this.Hora_Inicio = localStorage.getItem(this.Name + "_Hora_Inicio").split("|");
+					this.Hora_Fin = localStorage.getItem(this.Name + "_Hora_Fin").split("|");
+					// this.Observaciones = localStorage.getItem(this.Name + "_Observaciones".split("|"));
+					this.Hora_Trab = localStorage.getItem(this.Name + "_Hora_Trab").split(",");
+					this.count = localStorage.getItem(this.Name + "_count");
+					this.Trabajando = localStorage.getItem(this.Name + "_Trabajando");
+					this.Guardado = false;
+					for (var x = 0; x <= this.Hora_Trab.length-1; x++) {
+						this.Hora_Trab[x] = parseInt(this.Hora_Trab[x],10);
+					}
+					this.count = parseInt(this.count,10);
+					alert("Cargado");
+				}
+			}
+			/*this.Add_Obs = function(){
+				if(Admin()){
+					var New_Obs = document.getElementById("Obs");
+					this.Observaciones.push(New_Obs.value);
+				}
+				this.Guardado = false;
+				Actualizar();
+			}*/
+		}
+		function DynaTable (array_1,array_2,titulo_1,titulo_2){
+			var Longitud;
+			var Texto;
+			if(array_1.length >= array_2.length){
+				Longitud = array_1.length;
+			}
+			else{
+				Longitud = array_2.length;
+			}
+			Texto = "<tr><td align=\"center\">" + titulo_1 + "</td><td align=\"center\">" + titulo_2 + "</td></tr>";
+			for (var x = 0; x <= Longitud-1; x++) {
+				if(array_1[x] == undefined){
+					array_1[x] = "";
+				}
+				if(array_2[x] == undefined){
+					array_2[x] = "";
+				}
+				Texto = Texto + "<tr><td>" + array_1[x] + "</td><td>" + array_2[x] + "</td></tr>";
+			}
+			return Texto;
+		}
+		function Actualizar(){
+			Prueba.Conteo();
+			var Trabajador_Name = document.getElementById("Trabajador_Name");
+			var Title = document.getElementById("Title");
+			var Iniciar_Acabar_Trabajo = document.getElementById("Iniciar_Acabar_Trabajo");	
+			var _Trabajador_Name = document.getElementById("_Trabajador_Name");
+			var Edad = document.getElementById("Edad");
+			var Valor_Hora = document.getElementById("Val_Hora");
+			var _Horas_Trabajadas = document.getElementById("Horas_Trabajadas");
+			var Pago_Actual	 = document.getElementById("Pago_Actual");
+			var Tabla = document.getElementById("Tabla");
+			Tabla.innerHTML = DynaTable(Prueba.Hora_Inicio,Prueba.Hora_Fin,"Hora inicio de la jornada laboral","Hora fin de la jornada laboral");
+			Trabajador_Name.innerHTML = Prueba.Name;
+			Title.innerHTML = Prueba.Name;
+			if (Prueba.Trabajando == true){
+				Iniciar_Acabar_Trabajo.innerHTML = "Acabar de trabajar.";
+			}
+			else{
+				Iniciar_Acabar_Trabajo.innerHTML = "Iniciar a trabajar.";
+			}
+			_Trabajador_Name.innerHTML = Prueba.Name;
+			Edad.innerHTML = Prueba.Age;
+			Valor_Hora.innerHTML = "$ " + Prueba.Val_Hora;
+			_Horas_Trabajadas.innerHTML = Prueba.Horas_Trabajadas;
+			Pago_Actual.innerHTML = "$ " + Prueba.Pago;
+			
+		}
+		 function Inicio_Fin(){
+				if (Prueba.Trabajando == true){
+					Prueba.Fin();
+				}
+				else{
+					Prueba.Inicio();
+				}
+				Prueba.Conteo();
+				Prueba.Guardar();
+				Actualizar();
+			}
+		function Cerrar_Sesion(){
+			var Cerrar = document.getElementById("Cerrar");
+			Prueba.Guardar();
+			if(Prueba.Guardado){
+				Cerrar.action = "Main.html";
+				return true;
+			}
+			else{
+				alert("No se ha podido guardar, intentelo de nuevo.");
+				Cerrar.action = "";
+				return false;
+			}
+
+		}
+		function Reiniciar(){
+			var Reset = document.getElementById("Reset");
+			var Confirmar = confirm("Esto reiniciará el periodo borrando todos los datos. ¿Quieres continuar?");
+			if(Confirmar && Admin()){
+				localStorage.clear();
+				Prueba = new Trabajador("Sujeto de Prueba", 15, 1000, "7069");
+				Actualizar();
+				alert("Periodo reiniciado.");
+			}
+		}
+		function Admin(){
+			var Pass = prompt("Por favor ingrese la contraseña del administrador:");
+				if(Pass == "ESTRUCTURAS2"){
+					return true;
+				}
+				else{
+					alert("Contraseña incorrecta.");
+					return false;
+				}
+		}
+		/*function Actualizar_Obs(){
+			var _Observaciones = document.getElementById("Observaciones");
+			var Texto = "<tr><td align=\"center\" colspan=\"2\">Observaciones</td></tr>";
+			for(var x = 0; x <= Prueba.Observaciones.length; x++){
+				Texto = Texto + "<tr><td>" + Prueba.Observaciones[x] + "</td></tr>";
+			}
+			Texto = Texto + "<tr><td><input type=\"text\" id=\"Obs\" placeholder=\"Ingresa alguna observación\"></td><td><button id=\"add_Obs\">Añadir observación</button></td></tr>";
+		}*/
+		Prueba = new Trabajador("Sujeto de Prueba", 15, 1000, "7069");
+		Prueba.Cargar();
+		Actualizar();
+	</script>
+	
+</body>
+</html>
